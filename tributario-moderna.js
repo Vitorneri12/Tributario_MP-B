@@ -97,6 +97,41 @@ const createMobileMenu = () => {
     });
 };
 
+// Function to create WhatsApp message from form data
+function createWhatsAppMessage(data) {
+    let message = '🏢 *SOLICITAÇÃO DE CONSULTORIA TRIBUTÁRIA*\n\n';
+
+    message += `👤 *Nome:* ${data.nome}\n`;
+    message += `📧 *E-mail:* ${data.email}\n`;
+    message += `📞 *Telefone:* ${data.telefone}\n`;
+
+    if (data.empresa && data.empresa.trim() !== '') {
+        message += `🏢 *Empresa:* ${data.empresa}\n`;
+    }
+
+    // Convert service value to readable text
+    const serviceLabels = {
+        'recuperacao': 'Recuperação de Impostos',
+        'compensacao': 'Compensação de Créditos',
+        'defesa': 'Defesa em Autuações',
+        'consultoria': 'Consultoria Preventiva',
+        'outro': 'Outro'
+    };
+
+    const serviceName = serviceLabels[data.servico] || data.servico;
+    message += `⚖️ *Serviço:* ${serviceName}\n`;
+
+    if (data.mensagem && data.mensagem.trim() !== '') {
+        message += `\n💬 *Mensagem:*\n${data.mensagem}\n`;
+    }
+
+    message += '\n---\n';
+    message += '📅 Enviado em: ' + new Date().toLocaleString('pt-BR');
+    message += '\n🌐 Via: Site Martins Palmeira e Bergamo';
+
+    return message;
+}
+
 // Form submission handler for consultation form
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.querySelector('.hero-form form');
@@ -145,6 +180,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 button.textContent = 'Enviando...';
                 button.disabled = true;
 
+                // Create WhatsApp message
+                const whatsappMessage = createWhatsAppMessage(data);
+                const whatsappUrl = `https://wa.me/5519998630306?text=${encodeURIComponent(whatsappMessage)}`;
+
                 // Simulate form submission
                 setTimeout(() => {
                     // Track successful form completion
@@ -154,7 +193,10 @@ document.addEventListener('DOMContentLoaded', function() {
                         'value': 50
                     });
 
-                    alert('Mensagem enviada com sucesso! Entraremos em contato em breve.');
+                    // Open WhatsApp with pre-filled message
+                    window.open(whatsappUrl, '_blank');
+
+                    alert('Redirecionando para o WhatsApp com sua mensagem! Se não abrir automaticamente, clique no botão WhatsApp no topo da página.');
                     this.reset();
                     button.textContent = originalText;
                     button.disabled = false;
